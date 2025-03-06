@@ -234,12 +234,21 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonCone()
 	renderer->SetBackground(.1, .2, .3);
 	renderer->ResetCamera();
 
+	//add camera, light
 	vtkSmartPointer<vtkCamera> camera = renderer->GetActiveCamera();
-	
-	camera->SetClippingRange(0.1, 10);
-	camera->SetFocalPoint(0, 0, 0);
-	camera->SetViewUp(0, 1, 0);
-	camera->SetPosition(0, 0, 5);
+	vtkSmartPointer<vtkLight> newLight = vtkSmartPointer<vtkLight>::New();
+
+	newLight->SetColor(1, 1, 0);
+	newLight->SetFocalPoint(camera->GetFocalPoint());
+	newLight->SetPosition(camera->GetPosition());
+	renderer->AddLight(newLight);
+
+	//camera->SetClippingRange(0.1, 10);
+	//camera->SetFocalPoint(0, 0, 0);
+	//camera->SetViewUp(0, 1, 0);
+	//camera->SetPosition(0, 0, 5);
+
+
 
 	m_vtkWindow->AddRenderer(renderer);
 	m_vtkWindow->Render();
