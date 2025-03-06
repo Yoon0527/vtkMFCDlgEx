@@ -26,5 +26,6 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkConeSource.h>
+#include <vtkCamera.h>
 
 #endif //PCH_H
