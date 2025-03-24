@@ -8,6 +8,15 @@
 #include "vtkMFCDlgExDlg.h"
 #include "afxdialogex.h"
 
+//#include <vtkPoints.h>
+//#include <vtkCellArray.h>
+//#include <vtkPolyData.h>
+//
+//#include<vtkArrowSource.h>
+
+#include <vtkSTLReader.h>
+#include <vtkSTLWriter.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -71,6 +80,7 @@ BEGIN_MESSAGE_MAP(CvtkMFCDlgExDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_CONE, &CvtkMFCDlgExDlg::OnBnClickedButtonCone)
+	ON_BN_CLICKED(IDC_BUTTON_EX_VTKPOLYDATA, &CvtkMFCDlgExDlg::OnBnClickedButtonExVtkpolydata)
 END_MESSAGE_MAP()
 
 
@@ -252,6 +262,125 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonCone()
 
 	m_vtkWindow->AddRenderer(renderer);
 	m_vtkWindow->Render();
+
+
+}
+
+void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkpolydata()
+{
+#pragma region QUADRANGLE
+	//vtkSmartPointer<vtkPoints> pPoints = vtkSmartPointer<vtkPoints>::New();
+	////InsertPoint(ID, x, y, z)
+	//pPoints->InsertPoint(0, 0.0, 0.0, 0.0);
+	//pPoints->InsertPoint(1, 0.0, 1.0, 0.0);
+	//pPoints->InsertPoint(2, 1.0, 0.0, 0.0);
+	//pPoints->InsertPoint(3, 1.0, 1.0, 0.0);
+
+	//vtkSmartPointer<vtkCellArray> pPolys = vtkSmartPointer<vtkCellArray>::New();
+
+	////점의 수, ID 추가
+	//pPolys->InsertNextCell(3);
+	//pPolys->InsertCellPoint(0);
+	//pPolys->InsertCellPoint(1);
+	//pPolys->InsertCellPoint(2);
+
+	//pPolys->InsertNextCell(3);
+	//pPolys->InsertCellPoint(1);
+	//pPolys->InsertCellPoint(3);
+	//pPolys->InsertCellPoint(2);
+
+	//vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
+
+	////위치 정보
+	//pPolyData->SetPoints(pPoints);
+
+	////형태 정보
+	//pPolyData->SetPolys(pPolys);
+
+	//// mapper, actor 생성
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+
+	//mapper->SetInputData(pPolyData);
+	//actor->SetMapper(mapper);
+
+	//// 시각화
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(.1, .2, .3);
+	//renderer->ResetCamera();
+
+	////렌더링
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+#pragma endregion
+
+#pragma region ARROW
+
+	//vtkSmartPointer<vtkArrowSource> pArrow = vtkSmartPointer<vtkArrowSource>::New();
+	//pArrow->SetShaftRadius(0.03);
+	//pArrow->SetShaftResolution(100);
+	//pArrow->SetTipRadius(0.1);
+	//pArrow->SetTipLength(0.35);
+	//pArrow->SetTipResolution(100);
+	//pArrow->Update();
+
+	////vtkPolyData 받아오기
+	//vtkSmartPointer<vtkPolyData> pPolyData = pArrow->GetOutput();
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+
+	//mapper->SetInputData(pPolyData);
+	//actor->SetMapper(mapper);
+
+	//// 시각화
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(.1, .2, .3);
+	//renderer->ResetCamera();
+
+	////rendering
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+#pragma endregion
+
+
+#pragma region STL
+
+	// 파일 읽기
+	vtkSmartPointer<vtkSTLReader> pSTLReader = vtkSmartPointer<vtkSTLReader>::New();
+	pSTLReader->SetFileName("./data/example.stl");
+	pSTLReader->Update();
+
+	vtkSmartPointer<vtkPolyData> pPolyData = pSTLReader->GetOutput();
+
+	// 파일 저장하기
+	vtkSmartPointer<vtkSTLWriter> pSTLWriter = vtkSmartPointer<vtkSTLWriter>::New();
+
+	pSTLWriter->SetInputData(pPolyData);
+	pSTLWriter->SetFileName("./data/example1.stl");
+	pSTLWriter->Write();
+
+	// 매퍼, 액터 생성
+	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+
+	mapper->SetInputData(pPolyData);
+	actor->SetMapper(mapper);
+
+	// 시각화
+	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	renderer->AddActor(actor);
+	renderer->SetBackground(.1, .2, .3);
+	renderer->ResetCamera();
+
+	//렌더링
+	m_vtkWindow->AddRenderer(renderer);
+	m_vtkWindow->Render();
+
+#pragma endregion
 
 
 }
