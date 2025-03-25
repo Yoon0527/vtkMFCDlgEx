@@ -8,6 +8,9 @@
 #include "vtkMFCDlgExDlg.h"
 #include "afxdialogex.h"
 
+#include <vtkProperty.h>
+#include <vtkArrowSource.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -71,6 +74,7 @@ BEGIN_MESSAGE_MAP(CvtkMFCDlgExDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_CONE, &CvtkMFCDlgExDlg::OnBnClickedButtonCone)
+	ON_BN_CLICKED(IDC_BUTTON_EX_VTKPROPERTY, &CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty)
 END_MESSAGE_MAP()
 
 
@@ -254,4 +258,37 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonCone()
 	m_vtkWindow->Render();
 
 
+}
+
+void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
+{
+	vtkSmartPointer<vtkArrowSource> arrow = vtkSmartPointer<vtkArrowSource>::New();
+	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+
+	// mapper에 polydata 연결
+	mapper->SetInputConnection(arrow->GetOutputPort());
+
+	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	
+	actor->SetMapper(mapper);
+
+	actor->GetProperty()->SetColor(0, 1, 0); //색상 설정
+	actor->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
+	actor->GetProperty()->SetPointSize(1.0); // vertex 크기
+	actor->GetProperty()->SetLineWidth(1.0); // line 굵기
+
+	actor->GetProperty()->SetRepresentation(VTK_SURFACE); // VTK_POINTS, VTK_WIREFRAME, VTK_SURFACE
+	actor->GetProperty()->BackfaceCullingOn(); // 뒷면 제거
+	actor->GetProperty()->LightingOn(); // 조명 적용
+	actor->GetProperty()->ShadingOn(); // 그림자 효과
+
+	// 시각화
+	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	renderer->AddActor(actor);
+	renderer->SetBackground(0.1, 0.2, 0.3);
+	renderer->ResetCamera();
+
+	//rendering
+	m_vtkWindow->AddRenderer(renderer);
+	m_vtkWindow->Render();
 }
