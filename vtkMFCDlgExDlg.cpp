@@ -11,6 +11,8 @@
 #include <vtkProperty.h>
 #include <vtkArrowSource.h>
 
+#include<vtkCleanPolyData.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -262,33 +264,91 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonCone()
 
 void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 {
-	vtkSmartPointer<vtkArrowSource> arrow = vtkSmartPointer<vtkArrowSource>::New();
-	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	#pragma region DrawPolyData
+	//vtkSmartPointer<vtkArrowSource> arrow = vtkSmartPointer<vtkArrowSource>::New();
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 
-	// mapper에 polydata 연결
-	mapper->SetInputConnection(arrow->GetOutputPort());
+	//// mapper에 polydata 연결
+	//mapper->SetInputConnection(arrow->GetOutputPort());
+
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//
+	//actor->SetMapper(mapper);
+
+	//actor->GetProperty()->SetColor(0, 1, 0); //색상 설정
+	//actor->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
+	//actor->GetProperty()->SetPointSize(1.0); // vertex 크기
+	//actor->GetProperty()->SetLineWidth(1.0); // line 굵기
+
+	//actor->GetProperty()->SetRepresentation(VTK_POINTS); // VTK_POINTS, VTK_WIREFRAME, VTK_SURFACE
+	//actor->GetProperty()->BackfaceCullingOn(); // 뒷면 제거
+	//actor->GetProperty()->LightingOn(); // 조명 적용
+	//actor->GetProperty()->ShadingOn(); // 그림자 효과
+
+	//// 시각화
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	////rendering
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+	#pragma endregion
+
+	#pragma region CleanPolyData
+
+	vtkSmartPointer<vtkPoints> pPoints = vtkSmartPointer<vtkPoints>::New();
+	pPoints->InsertPoint(0, 0.0, 0.0, 0.0);
+	pPoints->InsertPoint(1, 0.0, 1.0, 0.0);
+	pPoints->InsertPoint(2, 1.0, 0.0, 0.0);
+	pPoints->InsertPoint(3, 1.0, 1.0, 0.0);
+	pPoints->InsertPoint(4, 0.0, 1.0, 0.0);
+	pPoints->InsertPoint(5, 1.0, 0.0, 0.0);
+
+	vtkSmartPointer<vtkCellArray> pPolys = vtkSmartPointer<vtkCellArray>::New();
+	pPolys->InsertNextCell(3);
+	pPolys->InsertCellPoint(0);
+	pPolys->InsertCellPoint(1);
+	pPolys->InsertCellPoint(2);
+
+	pPolys->InsertNextCell(3);
+	pPolys->InsertCellPoint(4);
+	pPolys->InsertCellPoint(3);
+	pPolys->InsertCellPoint(5);
+
+	vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
+	pPolyData->SetPoints(pPoints);	//위치 정보
+	pPolyData->SetPolys(pPolys);		//형태 정보
+
+	int nPt = pPolyData->GetNumberOfPoints();	//점의 개수=6
+	int nPoly = pPolyData->GetNumberOfPolys();	//poly의 개수=2
+
+	vtkSmartPointer<vtkCleanPolyData> pClean = vtkSmartPointer<vtkCleanPolyData>::New();
+
+	pClean->SetInputData(pPolyData);
+	pClean->Update();
+
+	pPolyData->DeepCopy(pClean->GetOutput());
+	nPt = pPolyData->GetNumberOfPoints();	//점의 개수=4
+	nPoly = pPolyData->GetNumberOfPolys();	//poly의 개수=2
+
+	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	mapper->SetInputData(pPolyData);
 
 	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
-	
 	actor->SetMapper(mapper);
 
-	actor->GetProperty()->SetColor(0, 1, 0); //색상 설정
-	actor->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
-	actor->GetProperty()->SetPointSize(1.0); // vertex 크기
-	actor->GetProperty()->SetLineWidth(1.0); // line 굵기
-
-	actor->GetProperty()->SetRepresentation(VTK_SURFACE); // VTK_POINTS, VTK_WIREFRAME, VTK_SURFACE
-	actor->GetProperty()->BackfaceCullingOn(); // 뒷면 제거
-	actor->GetProperty()->LightingOn(); // 조명 적용
-	actor->GetProperty()->ShadingOn(); // 그림자 효과
-
-	// 시각화
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
 	renderer->AddActor(actor);
 	renderer->SetBackground(0.1, 0.2, 0.3);
 	renderer->ResetCamera();
 
-	//rendering
 	m_vtkWindow->AddRenderer(renderer);
 	m_vtkWindow->Render();
+
+	#pragma endregion
+
+
+	
 }
