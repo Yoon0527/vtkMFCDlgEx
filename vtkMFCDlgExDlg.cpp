@@ -1,7 +1,7 @@
 ﻿
 // vtkMFCDlgExDlg.cpp: 구현 파일
 //
-
+#pragma region INCLUDE
 #include "pch.h"
 #include "framework.h"
 #include "vtkMFCDlgEx.h"
@@ -12,6 +12,12 @@
 #include <vtkArrowSource.h>
 
 #include<vtkCleanPolyData.h>
+
+#include<vtkPolyDataNormals.h>
+#include<vtkSTLReader.h>
+#pragma endregion
+
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -298,43 +304,71 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 
 	#pragma region CleanPolyData
 
-	vtkSmartPointer<vtkPoints> pPoints = vtkSmartPointer<vtkPoints>::New();
-	pPoints->InsertPoint(0, 0.0, 0.0, 0.0);
-	pPoints->InsertPoint(1, 0.0, 1.0, 0.0);
-	pPoints->InsertPoint(2, 1.0, 0.0, 0.0);
-	pPoints->InsertPoint(3, 1.0, 1.0, 0.0);
-	pPoints->InsertPoint(4, 0.0, 1.0, 0.0);
-	pPoints->InsertPoint(5, 1.0, 0.0, 0.0);
+	//vtkSmartPointer<vtkPoints> pPoints = vtkSmartPointer<vtkPoints>::New();
+	//pPoints->InsertPoint(0, 0.0, 0.0, 0.0);
+	//pPoints->InsertPoint(1, 0.0, 1.0, 0.0);
+	//pPoints->InsertPoint(2, 1.0, 0.0, 0.0);
+	//pPoints->InsertPoint(3, 1.0, 1.0, 0.0);
+	//pPoints->InsertPoint(4, 0.0, 1.0, 0.0);
+	//pPoints->InsertPoint(5, 1.0, 0.0, 0.0);
 
-	vtkSmartPointer<vtkCellArray> pPolys = vtkSmartPointer<vtkCellArray>::New();
-	pPolys->InsertNextCell(3);
-	pPolys->InsertCellPoint(0);
-	pPolys->InsertCellPoint(1);
-	pPolys->InsertCellPoint(2);
+	//vtkSmartPointer<vtkCellArray> pPolys = vtkSmartPointer<vtkCellArray>::New();
+	//pPolys->InsertNextCell(3);
+	//pPolys->InsertCellPoint(0);
+	//pPolys->InsertCellPoint(1);
+	//pPolys->InsertCellPoint(2);
 
-	pPolys->InsertNextCell(3);
-	pPolys->InsertCellPoint(4);
-	pPolys->InsertCellPoint(3);
-	pPolys->InsertCellPoint(5);
+	//pPolys->InsertNextCell(3);
+	//pPolys->InsertCellPoint(4);
+	//pPolys->InsertCellPoint(3);
+	//pPolys->InsertCellPoint(5);
 
-	vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
-	pPolyData->SetPoints(pPoints);	//위치 정보
-	pPolyData->SetPolys(pPolys);		//형태 정보
+	//vtkSmartPointer<vtkPolyData> pPolyData = vtkSmartPointer<vtkPolyData>::New();
+	//pPolyData->SetPoints(pPoints);	//위치 정보
+	//pPolyData->SetPolys(pPolys);		//형태 정보
 
-	int nPt = pPolyData->GetNumberOfPoints();	//점의 개수=6
-	int nPoly = pPolyData->GetNumberOfPolys();	//poly의 개수=2
+	//int nPt = pPolyData->GetNumberOfPoints();	//점의 개수=6
+	//int nPoly = pPolyData->GetNumberOfPolys();	//poly의 개수=2
 
-	vtkSmartPointer<vtkCleanPolyData> pClean = vtkSmartPointer<vtkCleanPolyData>::New();
+	//vtkSmartPointer<vtkCleanPolyData> pClean = vtkSmartPointer<vtkCleanPolyData>::New();
 
-	pClean->SetInputData(pPolyData);
-	pClean->Update();
+	//pClean->SetInputData(pPolyData);
+	//pClean->Update();
 
-	pPolyData->DeepCopy(pClean->GetOutput());
-	nPt = pPolyData->GetNumberOfPoints();	//점의 개수=4
-	nPoly = pPolyData->GetNumberOfPolys();	//poly의 개수=2
+	//pPolyData->DeepCopy(pClean->GetOutput());
+	//nPt = pPolyData->GetNumberOfPoints();	//점의 개수=4
+	//nPoly = pPolyData->GetNumberOfPolys();	//poly의 개수=2
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputData(pPolyData);
+
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	#pragma endregion
+
+	#pragma region Normal
+
+	vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	stlReader->SetFileName("./data/example.stl");
+	stlReader->Update();
+
+	vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New();
+	normals->SetInputData(stlReader->GetOutput());
+	normals->ComputePointNormalsOn();	//Point Normal 계산
+	normals->ComputeCellNormalsOn();	//Cell Normal 계산
+	normals->Update();
 
 	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper->SetInputData(pPolyData);
+	mapper->SetInputConnection(normals->GetOutputPort());
 
 	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
 	actor->SetMapper(mapper);
@@ -348,7 +382,6 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 	m_vtkWindow->Render();
 
 	#pragma endregion
-
 
 	
 }
