@@ -15,6 +15,9 @@
 
 #include<vtkPolyDataNormals.h>
 #include<vtkSTLReader.h>
+
+#include<vtkDecimatePro.h>
+#include<vtkQuadricClustering.h>
 #pragma endregion
 
 
@@ -357,18 +360,54 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 
 	#pragma region Normal
 
+	//vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader->SetFileName("./data/example.stl");
+	//stlReader->Update();
+
+	//vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New();
+	//normals->SetInputData(stlReader->GetOutput());
+	//normals->ComputePointNormalsOn();	//Point Normal 계산
+	//normals->ComputeCellNormalsOn();	//Cell Normal 계산
+	//normals->Update();
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputConnection(normals->GetOutputPort());
+
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	#pragma endregion
+
+	#pragma region DECIMATION
+	
 	vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
 	stlReader->SetFileName("./data/example.stl");
 	stlReader->Update();
 
-	vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New();
-	normals->SetInputData(stlReader->GetOutput());
-	normals->ComputePointNormalsOn();	//Point Normal 계산
-	normals->ComputeCellNormalsOn();	//Cell Normal 계산
-	normals->Update();
+
+	//decimatePro
+	vtkSmartPointer<vtkDecimatePro> decimatepro = vtkSmartPointer<vtkDecimatePro>::New();
+	decimatepro->SetInputConnection(stlReader->GetOutputPort());
+	decimatepro->SetTargetReduction(0.9);	// 0.0~1.0, 0.9 = 90% 감소
+	decimatepro->PreserveTopologyOn();	//Topology 보존
+	decimatepro->Update();
+
+	//quadricClustering
+	vtkSmartPointer<vtkQuadricClustering> qClustering = vtkSmartPointer<vtkQuadricClustering>::New();
+	qClustering->SetInputConnection(stlReader->GetOutputPort());
+	qClustering->SetNumberOfDivisions(10, 10, 10);	//x, y, z 축으로 나눌 개수
+	qClustering->Update();
 
 	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper->SetInputConnection(normals->GetOutputPort());
+	mapper->SetInputConnection(qClustering->GetOutputPort());
 
 	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
 	actor->SetMapper(mapper);
@@ -383,5 +422,4 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 
 	#pragma endregion
 
-	
 }
