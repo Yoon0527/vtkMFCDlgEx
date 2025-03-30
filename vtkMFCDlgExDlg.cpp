@@ -20,6 +20,8 @@
 #include<vtkQuadricClustering.h>
 
 #include<vtkWindowedSincPolyDataFilter.h>
+#include<vtkPolyDataConnectivityFilter.h>
+
 #pragma endregion
 
 
@@ -448,6 +450,55 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 
 	//m_vtkWindow->AddRenderer(renderer);
 	//m_vtkWindow->Render();
+	#pragma endregion
+
+	#pragma region CONNECTIVITY CHECK
+	
+	//vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader->SetFileName("./data/example_connectivity.stl");
+	//stlReader->Update();
+
+	//vtkSmartPointer<vtkPolyDataConnectivityFilter> conFilter = vtkSmartPointer<vtkPolyDataConnectivityFilter>::New();
+	//conFilter->SetInputConnection(stlReader->GetOutputPort());
+
+	//// 모든 영역 추출
+	//conFilter->SetExtractionModeToAllRegions();
+
+	//// 가장 큰 영역 추출
+	////conFilter->SetExtractionModeToLargestRegion();	
+
+	//// seed로 연결된 영역 추출
+	////conFilter->AddSeed(id);	//seed 설정
+	////conFilter->SetExtractionModeToCellSeededRegions();
+	////conFilter->SetExtractionModeToPointSeededRegions();
+
+	//// 특정 point와 가까운 점과 연결된 영역 추출
+	////conFilter->SetClosestPoint(x, y, z);	//point 설정
+	////conFilter->SetExtractionModeToClosestPointRegion();
+
+	//conFilter->Update();
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputConnection(conFilter->GetOutputPort());
+
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	//Sleep(10000);
+
+	//conFilter->SetExtractionModeToLargestRegion();
+	//conFilter->Update();
+
+	//m_vtkWindow->Render();
+
 	#pragma endregion
 
 }
