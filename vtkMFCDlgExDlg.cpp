@@ -18,6 +18,8 @@
 
 #include<vtkDecimatePro.h>
 #include<vtkQuadricClustering.h>
+
+#include<vtkWindowedSincPolyDataFilter.h>
 #pragma endregion
 
 
@@ -387,39 +389,65 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 	#pragma endregion
 
 	#pragma region DECIMATION
+
+	//vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader->SetFileName("./data/example.stl");
+	//stlReader->Update();
+
+
+	////decimatePro
+	//vtkSmartPointer<vtkDecimatePro> decimatepro = vtkSmartPointer<vtkDecimatePro>::New();
+	//decimatepro->SetInputConnection(stlReader->GetOutputPort());
+	//decimatepro->SetTargetReduction(0.9);	// 0.0~1.0, 0.9 = 90% 감소
+	//decimatepro->PreserveTopologyOn();	//Topology 보존
+	//decimatepro->Update();
+
+	////quadricClustering
+	//vtkSmartPointer<vtkQuadricClustering> qClustering = vtkSmartPointer<vtkQuadricClustering>::New();
+	//qClustering->SetInputConnection(stlReader->GetOutputPort());
+	//qClustering->SetNumberOfDivisions(10, 10, 10);	//x, y, z 축으로 나눌 개수
+	//qClustering->Update();
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputConnection(qClustering->GetOutputPort());
+
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	#pragma endregion
 	
-	vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
-	stlReader->SetFileName("./data/example.stl");
-	stlReader->Update();
+	#pragma region SMOOTHING
+		
+	//vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader->SetFileName("./data/example.stl");
+	//stlReader->Update();
 
+	//vtkSmartPointer<vtkWindowedSincPolyDataFilter> smoothFilter = vtkSmartPointer<vtkWindowedSincPolyDataFilter>::New();
+	//smoothFilter->SetInputConnection(stlReader->GetOutputPort());
+	//smoothFilter->SetNumberOfIterations(10000);	//반복 횟수
+	//smoothFilter->Update();
 
-	//decimatePro
-	vtkSmartPointer<vtkDecimatePro> decimatepro = vtkSmartPointer<vtkDecimatePro>::New();
-	decimatepro->SetInputConnection(stlReader->GetOutputPort());
-	decimatepro->SetTargetReduction(0.9);	// 0.0~1.0, 0.9 = 90% 감소
-	decimatepro->PreserveTopologyOn();	//Topology 보존
-	decimatepro->Update();
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputConnection(smoothFilter->GetOutputPort());
 
-	//quadricClustering
-	vtkSmartPointer<vtkQuadricClustering> qClustering = vtkSmartPointer<vtkQuadricClustering>::New();
-	qClustering->SetInputConnection(stlReader->GetOutputPort());
-	qClustering->SetNumberOfDivisions(10, 10, 10);	//x, y, z 축으로 나눌 개수
-	qClustering->Update();
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
 
-	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper->SetInputConnection(qClustering->GetOutputPort());
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
 
-	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
-	actor->SetMapper(mapper);
-
-	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	renderer->AddActor(actor);
-	renderer->SetBackground(0.1, 0.2, 0.3);
-	renderer->ResetCamera();
-
-	m_vtkWindow->AddRenderer(renderer);
-	m_vtkWindow->Render();
-
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
 	#pragma endregion
 
 }
