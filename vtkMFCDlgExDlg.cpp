@@ -27,6 +27,10 @@
 
 #include<vtkTransform.h>
 #include<vtkTransformPolyDataFilter.h>
+
+#include<vtkLandmarkTransform.h>
+#include<vtkIterativeClosestPointTransform.h>
+
 #pragma endregion
 
 
@@ -542,35 +546,157 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 
 	#pragma region TRANSFORM
 	
-	vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
-	stlReader->SetFileName("./data/example.stl");
-	stlReader->Update();
+	//vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader->SetFileName("./data/example.stl");
+	//stlReader->Update();
 
-	vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
-	transform->Translate(10.0, 0, 0);	//이동
-	transform->RotateWXYZ(90, 0.0, 1.0, 0.0); //y축 중심으로 30도 회전
+	//vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+	//transform->Translate(10.0, 0, 0);	//이동
+	//transform->RotateWXYZ(90, 0.0, 1.0, 0.0); //y축 중심으로 30도 회전
 
-	vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
-	transformFilter->SetInputConnection(stlReader->GetOutputPort());
-	transformFilter->SetTransform(transform);
-	transformFilter->Update();
+	//vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
+	//transformFilter->SetInputConnection(stlReader->GetOutputPort());
+	//transformFilter->SetTransform(transform);
+	//transformFilter->Update();
 
-	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper->SetInputConnection(transformFilter->GetOutputPort());
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputConnection(transformFilter->GetOutputPort());
 
-	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
-	actor->SetMapper(mapper);
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+
+	#pragma endregion
+
+	#pragma region REGISTRATION_1
+	
+	//vtkSmartPointer<vtkPoints> point1 = vtkSmartPointer<vtkPoints>::New();
+	//point1->InsertNextPoint(-1.5, 0, 0);
+	//point1->InsertNextPoint(1.5, 0, 0);
+	//point1->InsertNextPoint(0, 1, 0);
+
+	//vtkSmartPointer<vtkCellArray> polys1 = vtkSmartPointer<vtkCellArray>::New();
+	//polys1->InsertNextCell(3);
+	//polys1->InsertCellPoint(0);
+	//polys1->InsertCellPoint(1);
+	//polys1->InsertCellPoint(2);
+
+	//vtkSmartPointer<vtkPolyData> pd1 = vtkSmartPointer<vtkPolyData>::New();
+	//pd1->SetPoints(point1);
+	//pd1->SetPolys(polys1);
+
+	//vtkSmartPointer<vtkPoints> point2 = vtkSmartPointer<vtkPoints>::New();
+	//point2->InsertNextPoint(4, 2, 0);
+	//point2->InsertNextPoint(2, 4, 0);
+	//point2->InsertNextPoint(2, 2, 0);
+
+	//vtkSmartPointer<vtkCellArray> polys2 = vtkSmartPointer<vtkCellArray>::New();
+	//polys2->InsertNextCell(3);
+	//polys2->InsertCellPoint(0);
+	//polys2->InsertCellPoint(1);
+	//polys2->InsertCellPoint(2);
+
+	//vtkSmartPointer<vtkPolyData> pd2 = vtkSmartPointer<vtkPolyData>::New();
+	//pd2->SetPoints(point2);
+	//pd2->SetPolys(polys2);
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper1 = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper1->SetInputData(pd1);
+	//mapper1->Update();
+
+	//vtkSmartPointer<vtkActor> actor1 = vtkSmartPointer<vtkActor>::New();
+	//actor1->SetMapper(mapper1);
+	//actor1->GetProperty()->SetRepresentationToWireframe();
+	//actor1->GetProperty()->SetColor(1, 0, 0);
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper2 = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper2->SetInputData(pd2);
+	//mapper2->Update();
+
+	//vtkSmartPointer<vtkActor> actor2 = vtkSmartPointer<vtkActor>::New();
+	//actor2->SetMapper(mapper2);
+	//actor2->GetProperty()->SetRepresentationToWireframe();
+	//actor2->GetProperty()->SetColor(0, 1, 0);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor1);
+	//renderer->AddActor(actor2);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	//Sleep(1000);
+
+	//vtkSmartPointer<vtkLandmarkTransform> landmarkTransform = vtkSmartPointer<vtkLandmarkTransform>::New();
+	//landmarkTransform->SetSourceLandmarks(pd1->GetPoints());
+	//landmarkTransform->SetTargetLandmarks(pd2->GetPoints());
+	//landmarkTransform->SetModeToRigidBody();
+	//landmarkTransform->Update();
+
+	//actor1->SetUserTransform(landmarkTransform);
+	//m_vtkWindow->Render();
+	
+	
+	#pragma endregion
+
+
+	#pragma region REGISTRATION_2
+
+	vtkSmartPointer<vtkSTLReader> stlReader1 = vtkSmartPointer<vtkSTLReader>::New();
+	stlReader1->SetFileName("./data/example.stl");
+	stlReader1->Update();
+
+	vtkSmartPointer<vtkSTLReader> stlReader2 = vtkSmartPointer<vtkSTLReader>::New();
+	stlReader2->SetFileName("./data/example_smooth_transform.stl");
+	stlReader2->Update();
+
+	vtkSmartPointer<vtkPolyDataMapper> mapper1 = vtkSmartPointer<vtkPolyDataMapper>::New();
+	mapper1->SetInputConnection(stlReader1->GetOutputPort());
+
+	vtkSmartPointer<vtkActor> actor1 = vtkSmartPointer<vtkActor>::New();
+	actor1->SetMapper(mapper1);
+	actor1->GetProperty()->SetColor(1.0, 1.0, 0.5);
+	actor1->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
+
+	vtkSmartPointer<vtkPolyDataMapper> mapper2 = vtkSmartPointer<vtkPolyDataMapper>::New();
+	mapper2->SetInputConnection(stlReader2->GetOutputPort());
+
+	vtkSmartPointer<vtkActor> actor2 = vtkSmartPointer<vtkActor>::New();
+	actor2->SetMapper(mapper2);
+	actor2->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
 
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	renderer->AddActor(actor);
+	renderer->AddActor(actor1);
+	renderer->AddActor(actor2);
 	renderer->SetBackground(0.1, 0.2, 0.3);
 	renderer->ResetCamera();
 
 	m_vtkWindow->AddRenderer(renderer);
 	m_vtkWindow->Render();
 
+	Sleep(1000);
+
+	vtkSmartPointer<vtkIterativeClosestPointTransform> icp = vtkSmartPointer<vtkIterativeClosestPointTransform>::New();
+	icp->SetSource(stlReader1->GetOutput());
+	icp->SetTarget(stlReader2->GetOutput());
+	icp->GetLandmarkTransform()->SetModeToRigidBody(); //Rigid Body로 설정
+	icp->SetMaximumNumberOfIterations(100); //최대 반복 횟수
+	icp->SetMaximumNumberOfLandmarks(50); //최대 랜드마크 개수
+	icp->Update();
+
+	actor1->SetUserTransform(icp);
+	m_vtkWindow->Render();
+
 
 	#pragma endregion
-
-
 }
