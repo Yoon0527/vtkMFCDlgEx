@@ -22,6 +22,11 @@
 #include<vtkWindowedSincPolyDataFilter.h>
 #include<vtkPolyDataConnectivityFilter.h>
 
+#include<vtkPlane.h>
+#include<vtkClipPolyData.h>
+
+#include<vtkTransform.h>
+#include<vtkTransformPolyDataFilter.h>
 #pragma endregion
 
 
@@ -500,5 +505,72 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 	//m_vtkWindow->Render();
 
 	#pragma endregion
+
+	#pragma region Clipping
+	
+	//vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader->SetFileName("./data/example.stl");
+	//stlReader->Update();
+
+	//double center[3];
+	//stlReader->GetOutput()->GetCenter(center); //mesh 중심점
+
+	//vtkSmartPointer<vtkPlane> plane = vtkSmartPointer<vtkPlane>::New();
+	//plane->SetOrigin(center);
+	//plane->SetNormal(1, 0, 0);	//x축으로 자름
+
+	//vtkSmartPointer<vtkClipPolyData> clip = vtkSmartPointer<vtkClipPolyData>::New();
+	//clip->SetInputConnection(stlReader->GetOutputPort());
+	//clip->SetClipFunction(plane);
+	//clip->Update();
+
+	//vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper->SetInputConnection(clip->GetOutputPort());
+
+	//vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	//actor->SetMapper(mapper);
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	#pragma endregion
+
+	#pragma region TRANSFORM
+	
+	vtkSmartPointer<vtkSTLReader> stlReader = vtkSmartPointer<vtkSTLReader>::New();
+	stlReader->SetFileName("./data/example.stl");
+	stlReader->Update();
+
+	vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+	transform->Translate(10.0, 0, 0);	//이동
+	transform->RotateWXYZ(90, 0.0, 1.0, 0.0); //y축 중심으로 30도 회전
+
+	vtkSmartPointer<vtkTransformPolyDataFilter> transformFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
+	transformFilter->SetInputConnection(stlReader->GetOutputPort());
+	transformFilter->SetTransform(transform);
+	transformFilter->Update();
+
+	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	mapper->SetInputConnection(transformFilter->GetOutputPort());
+
+	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	actor->SetMapper(mapper);
+
+	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	renderer->AddActor(actor);
+	renderer->SetBackground(0.1, 0.2, 0.3);
+	renderer->ResetCamera();
+
+	m_vtkWindow->AddRenderer(renderer);
+	m_vtkWindow->Render();
+
+
+	#pragma endregion
+
 
 }
