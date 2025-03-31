@@ -31,6 +31,10 @@
 #include<vtkLandmarkTransform.h>
 #include<vtkIterativeClosestPointTransform.h>
 
+#include<vtkDICOMImageReader.h>
+#include<vtkImageViewer.h>
+
+#include<VtkMarchingCubes.h>
 #pragma endregion
 
 
@@ -649,54 +653,97 @@ void CvtkMFCDlgExDlg::OnBnClickedButtonExVtkproperty()
 	
 	#pragma endregion
 
-
 	#pragma region REGISTRATION_2
 
-	vtkSmartPointer<vtkSTLReader> stlReader1 = vtkSmartPointer<vtkSTLReader>::New();
-	stlReader1->SetFileName("./data/example.stl");
-	stlReader1->Update();
+	//vtkSmartPointer<vtkSTLReader> stlReader1 = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader1->SetFileName("./data/example.stl");
+	//stlReader1->Update();
 
-	vtkSmartPointer<vtkSTLReader> stlReader2 = vtkSmartPointer<vtkSTLReader>::New();
-	stlReader2->SetFileName("./data/example_smooth_transform.stl");
-	stlReader2->Update();
+	//vtkSmartPointer<vtkSTLReader> stlReader2 = vtkSmartPointer<vtkSTLReader>::New();
+	//stlReader2->SetFileName("./data/example_smooth_transform.stl");
+	//stlReader2->Update();
 
-	vtkSmartPointer<vtkPolyDataMapper> mapper1 = vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper1->SetInputConnection(stlReader1->GetOutputPort());
+	//vtkSmartPointer<vtkPolyDataMapper> mapper1 = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper1->SetInputConnection(stlReader1->GetOutputPort());
 
-	vtkSmartPointer<vtkActor> actor1 = vtkSmartPointer<vtkActor>::New();
-	actor1->SetMapper(mapper1);
-	actor1->GetProperty()->SetColor(1.0, 1.0, 0.5);
-	actor1->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
+	//vtkSmartPointer<vtkActor> actor1 = vtkSmartPointer<vtkActor>::New();
+	//actor1->SetMapper(mapper1);
+	//actor1->GetProperty()->SetColor(1.0, 1.0, 0.5);
+	//actor1->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
 
-	vtkSmartPointer<vtkPolyDataMapper> mapper2 = vtkSmartPointer<vtkPolyDataMapper>::New();
-	mapper2->SetInputConnection(stlReader2->GetOutputPort());
+	//vtkSmartPointer<vtkPolyDataMapper> mapper2 = vtkSmartPointer<vtkPolyDataMapper>::New();
+	//mapper2->SetInputConnection(stlReader2->GetOutputPort());
 
-	vtkSmartPointer<vtkActor> actor2 = vtkSmartPointer<vtkActor>::New();
-	actor2->SetMapper(mapper2);
-	actor2->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
+	//vtkSmartPointer<vtkActor> actor2 = vtkSmartPointer<vtkActor>::New();
+	//actor2->SetMapper(mapper2);
+	//actor2->GetProperty()->SetOpacity(0.5); //불투명도 설정, 0.0~1.0 투명~불투명
+
+	//vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
+	//renderer->AddActor(actor1);
+	//renderer->AddActor(actor2);
+	//renderer->SetBackground(0.1, 0.2, 0.3);
+	//renderer->ResetCamera();
+
+	//m_vtkWindow->AddRenderer(renderer);
+	//m_vtkWindow->Render();
+
+	//Sleep(1000);
+
+	//vtkSmartPointer<vtkIterativeClosestPointTransform> icp = vtkSmartPointer<vtkIterativeClosestPointTransform>::New();
+	//icp->SetSource(stlReader1->GetOutput());
+	//icp->SetTarget(stlReader2->GetOutput());
+	//icp->GetLandmarkTransform()->SetModeToRigidBody(); //Rigid Body로 설정
+	//icp->SetMaximumNumberOfIterations(100); //최대 반복 횟수
+	//icp->SetMaximumNumberOfLandmarks(50); //최대 랜드마크 개수
+	//icp->Update();
+
+	//actor1->SetUserTransform(icp);
+	//m_vtkWindow->Render();
+
+
+	#pragma endregion
+
+	#pragma region DICOM IMAGE VIEWER
+	
+	//vtkSmartPointer<vtkDICOMImageReader> dcmReader = vtkSmartPointer<vtkDICOMImageReader>::New();
+	//dcmReader->SetFileName("./data/CT/CT.00002.00020.dcm");
+	//dcmReader->Update();
+	//
+	//vtkSmartPointer<vtkImageViewer> imageViewer = vtkSmartPointer<vtkImageViewer>::New();
+	//imageViewer->SetInputConnection(dcmReader->GetOutputPort());
+	//imageViewer->SetRenderWindow(m_vtkWindow);
+	//imageViewer->Render();
+	
+	#pragma endregion
+
+	#pragma region MARCHING CUBES
+	
+	vtkSmartPointer<vtkDICOMImageReader> dcmReader = vtkSmartPointer<vtkDICOMImageReader>::New();
+	dcmReader->SetDirectoryName("./data/CT");
+	dcmReader->Update();
+
+	vtkSmartPointer<vtkMarchingCubes> MCubes = vtkSmartPointer<vtkMarchingCubes>::New();
+	MCubes->SetInputConnection(dcmReader->GetOutputPort());
+	MCubes->SetValue(0, 100);	// 첫번째 iso-value 설정(id, value)
+	MCubes->ComputeScalarsOff();	
+	MCubes->ComputeScalarsOn();		// Normal 계산
+	MCubes->Update();
+
+	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	mapper->SetInputConnection(MCubes->GetOutputPort());
+	
+	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+	actor->SetMapper(mapper);
 
 	vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-	renderer->AddActor(actor1);
-	renderer->AddActor(actor2);
-	renderer->SetBackground(0.1, 0.2, 0.3);
+	renderer->AddActor(actor);
+	renderer->SetBackground(.1, .2, .3);
 	renderer->ResetCamera();
 
 	m_vtkWindow->AddRenderer(renderer);
 	m_vtkWindow->Render();
 
-	Sleep(1000);
-
-	vtkSmartPointer<vtkIterativeClosestPointTransform> icp = vtkSmartPointer<vtkIterativeClosestPointTransform>::New();
-	icp->SetSource(stlReader1->GetOutput());
-	icp->SetTarget(stlReader2->GetOutput());
-	icp->GetLandmarkTransform()->SetModeToRigidBody(); //Rigid Body로 설정
-	icp->SetMaximumNumberOfIterations(100); //최대 반복 횟수
-	icp->SetMaximumNumberOfLandmarks(50); //최대 랜드마크 개수
-	icp->Update();
-
-	actor1->SetUserTransform(icp);
-	m_vtkWindow->Render();
-
 
 	#pragma endregion
+
 }
